@@ -36,7 +36,10 @@ def calcular_coeficientes():
                 \nInterpretación:
                 \n- r indica la fuerza y dirección de la relación lineal entre las variables. Un valor de r cerca de 1 o -1 indica una fuerte relación, mientras que un valor cerca de 0 indica poca o ninguna relación.
                 \n- R^2 indica la proporción de la varianza en la variable dependiente que se puede predecir a partir de la variable independiente. Un R^2 de 1 significa que el modelo explica toda la variabilidad, mientras que un R^2 de 0 significa que no explica nada."""
-    messagebox.showinfo("Resultados", resultados)
+    #messagebox.showinfo("Resultados", resultados)
+
+    resultados_text.delete(1.0, tk.END)  # Limpiar el cuadro de texto antes de insertar nuevos resultados
+    resultados_text.insert(tk.END, resultados)
 
 
 def estadisticas_adicionales():
@@ -86,23 +89,11 @@ def agregar_fila():
 def ajustar_tamaño():
     # Actualiza el tamaño del Treeview
     num_filas = len(tree.get_children()) + 1  # +1 para incluir el encabezado
-    altura_fila = 25  # Altura estimada de cada fila
-    altura_total = altura_fila * num_filas# +100 para margen adicional
-    # Ajustar la altura del Treeview
-    
-    if (num_filas < 20):
-        tree.config(height=num_filas)
-        root.geometry(f"1000x500")
-    if (num_filas >= 20 and num_filas < 31): 
-        tree.config(height=num_filas)
-        root.geometry(f"1000x{altura_total}")
-    if (num_filas == 31):
-        root.geometry(f"1000x750")
-        
-        
-    
+    root.geometry(f"1200x700")
 
-  # Agregar número de fila
+    if (num_filas < 21):
+        tree.config(height=num_filas)
+        
 
 def obtener_datos():
     global x, y
@@ -231,6 +222,8 @@ def reiniciar_datos_y_grafico():
     for widget in plot_frame.winfo_children():
         widget.destroy()
 
+    resultados_text.delete(1.0, tk.END)  # Limpiar el cuadro de texto antes de insertar nuevos resultados
+
     messagebox.showinfo("Reiniciar", "Datos y gráfico reiniciados correctamente.")
 
 
@@ -262,19 +255,25 @@ def crear_interfaz():
 
     btn_reiniciar = tk.Button(button_frame, text="Reiniciar Datos y Gráfico", command=reiniciar_datos_y_grafico, bg='#FF69B4')
     btn_reiniciar.pack(side=tk.LEFT, padx=5, pady=0)
-    # Crear el frame principal para la tabla y gráficos
-    main_frame = tk.Frame(root , bg='pink')
+
+    
+
+# Crear el frame principal para la tabla y gráficos
+    main_frame = tk.Frame(root, bg='pink')
     main_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
+    # Crear un frame para la tabla y el cuadro de texto
+    table_and_text_frame = tk.Frame(main_frame, bg='pink')
+    table_and_text_frame.pack(side=tk.LEFT, fill=tk.BOTH)
+
     # Crear el frame para la tabla
-    table_frame = tk.Frame(main_frame, bg='pink')
-    table_frame.pack(side=tk.LEFT,fill=tk.BOTH)
+    table_frame = tk.Frame(table_and_text_frame, bg='pink')
+    table_frame.pack(side=tk.TOP, fill=tk.BOTH)
 
     # Crear tabla para la entrada de datos
     global tree
     tree = ttk.Treeview(table_frame, columns=("sem", "pub", "vtas", "x2", "y2"), show='headings')
-    tree.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
-
+    tree.pack(side=tk.TOP, fill=tk.BOTH, padx=5, pady=5)
 
     # Configurar encabezados
     tree.heading("sem", text="Sem")
@@ -292,6 +291,12 @@ def crear_interfaz():
     # Ajustar el tamaño de la fuente para filas más cuadradas
     style = ttk.Style()
     style.configure("Treeview", font=("Arial", 10))
+
+    global resultados_text
+    # Crear un cuadro de texto para mostrar resultados
+    resultados_text = tk.Text(table_and_text_frame, height=15, width=30, bg='pink',borderwidth=0, highlightthickness=0)
+    resultados_text.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
 
     # Añadir una fila vacía al principio
     agregar_fila()  # Fila inicial vacía
